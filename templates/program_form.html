@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}{% if program %}Edit{% else %}New{% endif %} Program{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1>{% if program %}Edit{% else %}New{% endif %} Program</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Program Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ program.name if program }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="4">{{ program.description if program }}</textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ program.start_date if program }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ program.end_date if program }}">
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="Planning" {% if program and program.status == 'Planning' %}selected{% endif %}>Planning</option>
+                    <option value="Active" {% if program and program.status == 'Active' %}selected{% endif %}>Active</option>
+                    <option value="On Hold" {% if program and program.status == 'On Hold' %}selected{% endif %}>On Hold</option>
+                    <option value="Completed" {% if program and program.status == 'Completed' %}selected{% endif %}>Completed</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Program</button>
+            <a href="{{ url_for('programs') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

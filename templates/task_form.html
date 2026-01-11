@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}{% if task %}Edit{% else %}New{% endif %} Task{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1>{% if task %}Edit{% else %}New{% endif %} Task for {{ project.name }}</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Task Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ task.name if task }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="description" rows="3">{{ task.description if task }}</textarea>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select" id="status" name="status">
+                        <option value="Not Started" {% if task and task.status == 'Not Started' %}selected{% endif %}>Not Started</option>
+                        <option value="In Progress" {% if task and task.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                        <option value="Completed" {% if task and task.status == 'Completed' %}selected{% endif %}>Completed</option>
+                        <option value="Blocked" {% if task and task.status == 'Blocked' %}selected{% endif %}>Blocked</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="priority" class="form-label">Priority</label>
+                    <select class="form-select" id="priority" name="priority">
+                        <option value="Low" {% if task and task.priority == 'Low' %}selected{% endif %}>Low</option>
+                        <option value="Medium" {% if task and task.priority == 'Medium' %}selected{% endif %}>Medium</option>
+                        <option value="High" {% if task and task.priority == 'High' %}selected{% endif %}>High</option>
+                        <option value="Critical" {% if task and task.priority == 'Critical' %}selected{% endif %}>Critical</option>
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="completion_percentage" class="form-label">Completion (%)</label>
+                <input type="number" class="form-control" id="completion_percentage" name="completion_percentage" min="0" max="100" value="{{ task.completion_percentage if task else 0 }}">
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ task.start_date if task }}">
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ task.end_date if task }}">
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Task</button>
+            <a href="{{ url_for('view_project', project_id=project.id) }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

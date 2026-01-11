@@ -1,0 +1,136 @@
+/* Custom styles for Project Manager */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Card hover effects */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* List group items */
+.list-group-item-action:hover {
+    background-color: #f8f9fa;
+}
+
+/* Status badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Progress bars */
+.progress {
+    height: 25px;
+    font-size: 0.875rem;
+}
+
+/* Table styles */
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.02);
+}
+
+/* Form styles */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13,110,253,.25);
+}
+
+/* Button groups */
+.btn-group .btn {
+    margin-right: 0.5rem;
+}
+
+/* Modal styles */
+.modal-header {
+    background-color: #f8f9fa;
+}
+
+/* Navigation */
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Breadcrumb */
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+}
+
+/* Statistics cards on dashboard */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning {
+    border: none;
+}
+
+/* Tab content */
+.tab-content {
+    padding-top: 1rem;
+}
+
+/* Milestone list */
+.list-group-item h5 i {
+    font-size: 1.5rem;
+    vertical-align: middle;
+}
+
+/* Responsive tables */
+@media (max-width: 768px) {
+    .table-responsive {
+        font-size: 0.875rem;
+    }
+}
+
+/* Utility classes */
+.text-decoration-none {
+    text-decoration: none;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Loading states */
+.btn:disabled {
+    cursor: not-allowed;
+}
+
+/* Alert styles */
+.alert {
+    border-left: 4px solid;
+}
+
+.alert-success {
+    border-left-color: #28a745;
+}
+
+.alert-danger {
+    border-left-color: #dc3545;
+}
+
+.alert-warning {
+    border-left-color: #ffc107;
+}
+
+.alert-info {
+    border-left-color: #17a2b8;
+}

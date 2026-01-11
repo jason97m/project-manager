@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Contacts - Project Manager{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Contacts</h1>
+        <a href="{{ url_for('new_contact') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Contact
+        </a>
+    </div>
+</div>
+{% if contacts %}
+<div class="row">
+    {% for contact in contacts %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ contact.name }}</h5>
+                <p class="card-text">
+                    <strong>{{ contact.role or 'No role specified' }}</strong><br>
+                    {% if contact.email %}<i class="bi bi-envelope"></i> {{ contact.email }}<br>{% endif %}
+                    {% if contact.phone %}<i class="bi bi-phone"></i> {{ contact.phone }}<br>{% endif %}
+                </p>
+                <a href="{{ url_for('edit_contact', contact_id=contact.id) }}" class="btn btn-sm btn-warning">
+                    <i class="bi bi-pencil"></i> Edit
+                </a>
+                <form method="POST" action="{{ url_for('delete_contact', contact_id=contact.id) }}" style="display: inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Delete this contact?')">
+                        <i class="bi bi-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">No contacts yet. Add team members to assign them to work!</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Projects - Project Manager{% endblock %}
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Projects</h1>
+        <a href="{{ url_for('new_project') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i> New Project
+        </a>
+    </div>
+</div>
+{% if projects %}
+<div class="row">
+    {% for project in projects %}
+    <div class="col-md-6 col-lg-4 mb-3">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{{ url_for('view_project', project_id=project.id) }}">{{ project.name }}</a>
+                </h5>
+                {% if project.program %}
+                <small class="text-muted">Program: {{ project.program.name }}</small>
+                {% endif %}
+                <p class="card-text">{{ project.description[:100] if project.description else 'No description' }}</p>
+                <div class="mb-2">
+                    <span class="badge bg-secondary">{{ project.status }}</span>
+                    <span class="badge bg-info">{{ project.tasks|length }} tasks</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">No projects yet. Create one to get started!</div>
+{% endif %}
+{% endblock %}

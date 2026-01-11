@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center mt-5">
+    <div class="col-md-8 text-center">
+        <h1 class="display-4"><i class="bi bi-kanban text-primary"></i> Project Manager</h1>
+        <p class="lead mt-3">Manage your programs, projects, tasks, and teams all in one place</p>
+        
+        <div class="row mt-5">
+            <div class="col-md-3">
+                <i class="bi bi-folder-fill text-primary" style="font-size: 3rem;"></i>
+                <h5 class="mt-2">Programs</h5>
+                <p>Organize multiple projects under programs</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-briefcase-fill text-success" style="font-size: 3rem;"></i>
+                <h5 class="mt-2">Projects</h5>
+                <p>Track standalone or grouped projects</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-check-square-fill text-info" style="font-size: 3rem;"></i>
+                <h5 class="mt-2">Tasks</h5>
+                <p>Break down work into manageable tasks</p>
+            </div>
+            <div class="col-md-3">
+                <i class="bi bi-people-fill text-warning" style="font-size: 3rem;"></i>
+                <h5 class="mt-2">Teams</h5>
+                <p>Assign contacts to your work items</p>
+            </div>
+        </div>
+
+        <div class="mt-5">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg me-2">Get Started</a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">Login</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

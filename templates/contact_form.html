@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}{% if contact %}Edit{% else %}New{% endif %} Contact{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h1>{% if contact %}Edit{% else %}New{% endif %} Contact</h1>
+        <form method="POST">
+            <div class="mb-3">
+                <label for="name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="{{ contact.name if contact }}" required>
+            </div>
+            <div class="mb-3">
+                <label for="role" class="form-label">Role</label>
+                <input type="text" class="form-control" id="role" name="role" value="{{ contact.role if contact }}" placeholder="e.g., Project Manager, Developer">
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{{ contact.email if contact }}">
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone</label>
+                <input type="tel" class="form-control" id="phone" name="phone" value="{{ contact.phone if contact }}">
+            </div>
+            <div class="mb-3">
+                <label for="notes" class="form-label">Notes</label>
+                <textarea class="form-control" id="notes" name="notes" rows="3">{{ contact.notes if contact }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Contact</button>
+            <a href="{{ url_for('contacts') }}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
