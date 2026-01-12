@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, redirect, url_for, flash, jso
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, User, Program, Project, Task, Milestone, Contact, Material
 from datetime import datetime
+from stripe_routes import stripe_bp
 
 app = Flask(__name__)
 
@@ -21,6 +22,9 @@ db.init_app(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+
+# Register blueprints
+app.register_blueprint(stripe_bp)
 
 
 @login_manager.user_loader
@@ -140,6 +144,11 @@ def programs():
 @app.route('/program/new', methods=['GET', 'POST'])
 @login_required
 def new_program():
+    # Check subscription limits
+    if not current_user.can_create_program():
+        flash(f'You have reached the limit of {current_user.get_limits()["programs"]} program(s) for your plan. Upgrade to create more!', 'warning')
+        return redirect(url_for('stripe.pricing'))
+    
     if request.method == 'POST':
         program = Program(
             user_id=current_user.id,
@@ -225,6 +234,11 @@ def projects():
 @app.route('/project/new', methods=['GET', 'POST'])
 @login_required
 def new_project():
+    # Check subscription limits
+    if not current_user.can_create_project():
+        flash(f'You have reached the limit of {current_user.get_limits()["projects"]} project(s) for your plan. Upgrade to create more!', 'warning')
+        return redirect(url_for('stripe.pricing'))
+    
     if request.method == 'POST':
         project = Project(
             user_id=current_user.id,
@@ -396,6 +410,11 @@ def contacts():
 @app.route('/contact/new', methods=['GET', 'POST'])
 @login_required
 def new_contact():
+    # Check subscription limits
+    if not current_user.can_create_contact():
+        flash(f'You have reached the limit of {current_user.get_limits()["contacts"]} contact(s) for your plan. Upgrade to create more!', 'warning')
+        return redirect(url_for('stripe.pricing'))
+    
     if request.method == 'POST':
         contact = Contact(
             user_id=current_user.id,

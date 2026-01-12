@@ -30,6 +30,13 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
+    # Subscription fields
+    subscription_tier = db.Column(db.String(20), default='free')  # free, pro, business
+    stripe_customer_id = db.Column(db.String(255))
+    stripe_subscription_id = db.Column(db.String(255))
+    subscription_status = db.Column(db.String(20), default='active')  # active, canceled, past_due
+    subscription_end_date = db.Column(db.DateTime)
+    
     # Relationships
     programs = db.relationship('Program', backref='owner', lazy=True, cascade='all, delete-orphan')
     projects = db.relationship('Project', backref='owner', lazy=True, cascade='all, delete-orphan')
@@ -40,6 +47,51 @@ class User(UserMixin, db.Model):
     
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+    
+    def get_limits(self):
+        """Return usage limits based on subscription tier"""
+        limits = {
+            'free': {
+                'programs': 1,
+                'projects': 3,
+                'tasks_per_project': 10,
+                'contacts': 5
+            },
+            'pro': {
+                'programs': 5,
+                'projects': 25,
+                'tasks_per_project': float('inf'),
+                'contacts': 25
+            },
+            'business': {
+                'programs': float('inf'),
+                'projects': float('inf'),
+                'tasks_per_project': float('inf'),
+                'contacts': float('inf')
+            }
+        }
+        return limits.get(self.subscription_tier, limits['free'])
+    
+    def can_create_program(self):
+        """Check if user can create another program"""
+        limit = self.get_limits()['programs']
+        if limit == float('inf'):
+            return True
+        return len(self.programs) < limit
+    
+    def can_create_project(self):
+        """Check if user can create another project"""
+        limit = self.get_limits()['projects']
+        if limit == float('inf'):
+            return True
+        return len(self.projects) < limit
+    
+    def can_create_contact(self):
+        """Check if user can create another contact"""
+        limit = self.get_limits()['contacts']
+        if limit == float('inf'):
+            return True
+        return len(self.contacts) < limit
     
     def __repr__(self):
         return f'<User {self.username}>'

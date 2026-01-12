@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Subscription - Project Manager{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Subscription Management</h1>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Current Plan Card -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Current Plan</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h2>{{ current_user.subscription_tier|title }}</h2>
+                        {% if current_user.subscription_tier == 'free' %}
+                        <p class="text-muted">Free forever</p>
+                        {% else %}
+                        <p class="text-muted">
+                            ${{ plans[current_user.subscription_tier].price }}/month
+                        </p>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 text-end">
+                        {% if current_user.subscription_tier == 'free' %}
+                        <a href="{{ url_for('stripe.pricing') }}" class="btn btn-success">
+                            <i class="bi bi-arrow-up-circle"></i> Upgrade Plan
+                        </a>
+                        {% else %}
+                        <form method="POST" action="{{ url_for('stripe.create_portal_session') }}" style="display: inline;">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-gear"></i> Manage Subscription
+                            </button>
+                        </form>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if subscription %}
+                <hr>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <p><strong>Status:</strong> 
+                            <span class="badge bg-{% if subscription.status == 'active' %}success{% elif subscription.status == 'past_due' %}warning{% else %}secondary{% endif %}">
+                                {{ subscription.status|title }}
+                            </span>
+                        </p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Next Billing Date:</strong> 
+                            {{ current_user.subscription_end_date.strftime('%B %d, %Y') if current_user.subscription_end_date else 'N/A' }}
+                        </p>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Usage Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4 class="mb-0">Current Usage</h4>
+            </div>
+            <div class="card-body">
+                {% set limits = current_user.get_limits() %}
+                
+                <!-- Programs -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span><strong>Programs</strong></span>
+                        <span class="text-muted">
+                            {{ current_user.programs|length }} / 
+                            {% if limits.programs == float('inf') %}∞{% else %}{{ limits.programs }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="progress">
+                        {% if limits.programs == float('inf') %}
+                        <div class="progress-bar bg-success" style="width: 10%"></div>
+                        {% else %}
+                        <div class="progress-bar {% if current_user.programs|length >= limits.programs %}bg-danger{% else %}bg-success{% endif %}" 
+                             style="width: {{ (current_user.programs|length / limits.programs * 100)|int }}%"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Projects -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span><strong>Projects</strong></span>
+                        <span class="text-muted">
+                            {{ current_user.projects|length }} / 
+                            {% if limits.projects == float('inf') %}∞{% else %}{{ limits.projects }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="progress">
+                        {% if limits.projects == float('inf') %}
+                        <div class="progress-bar bg-success" style="width: 10%"></div>
+                        {% else %}
+                        <div class="progress-bar {% if current_user.projects|length >= limits.projects %}bg-danger{% else %}bg-success{% endif %}" 
+                             style="width: {{ (current_user.projects|length / limits.projects * 100)|int }}%"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Contacts -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span><strong>Contacts</strong></span>
+                        <span class="text-muted">
+                            {{ current_user.contacts|length }} / 
+                            {% if limits.contacts == float('inf') %}∞{% else %}{{ limits.contacts }}{% endif %}
+                        </span>
+                    </div>
+                    <div class="progress">
+                        {% if limits.contacts == float('inf') %}
+                        <div class="progress-bar bg-success" style="width: 10%"></div>
+                        {% else %}
+                        <div class="progress-bar {% if current_user.contacts|length >= limits.contacts %}bg-danger{% else %}bg-success{% endif %}" 
+                             style="width: {{ (current_user.contacts|length / limits.contacts * 100)|int }}%"></div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if current_user.subscription_tier == 'free' and (current_user.programs|length >= limits.programs or current_user.projects|length >= limits.projects or current_user.contacts|length >= limits.contacts) %}
+                <div class="alert alert-warning mt-3">
+                    <i class="bi bi-exclamation-triangle"></i> You're at or near your plan limits. 
+                    <a href="{{ url_for('stripe.pricing') }}">Upgrade now</a> to add more items!
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-4">
+        <!-- Features Card -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Plan Features</h5>
+            </div>
+            <div class="card-body">
+                {% if current_user.subscription_tier == 'free' %}
+                <ul class="list-unstyled">
+                    <li><i class="bi bi-check-circle text-success"></i> 1 program</li>
+                    <li><i class="bi bi-check-circle text-success"></i> 3 projects</li>
+                    <li><i class="bi bi-check-circle text-success"></i> 10 tasks per project</li>
+                    <li><i class="bi bi-check-circle text-success"></i> 5 contacts</li>
+                    <li><i class="bi bi-check-circle text-success"></i> Basic features</li>
+                </ul>
+                {% else %}
+                <ul class="list-unstyled">
+                    {% for feature in plans[current_user.subscription_tier].features %}
+                    <li><i class="bi bi-check-circle text-success"></i> {{ feature }}</li>
+                    {% endfor %}
+                </ul>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Upgrade CTA -->
+        {% if current_user.subscription_tier != 'business' %}
+        <div class="card border-primary">
+            <div class="card-body text-center">
+                <h5>Want More?</h5>
+                <p class="text-muted">Upgrade to unlock additional features and higher limits.</p>
+                <a href="{{ url_for('stripe.pricing') }}" class="btn btn-primary">
+                    <i class="bi bi-star"></i> View Plans
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
